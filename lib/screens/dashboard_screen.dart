@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:msacco/screens/account_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+  const DashboardScreen({super.key});
 
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
@@ -53,7 +53,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               padding:
                   const EdgeInsets.all(8.0), // Apply 8px padding on all sides
               child: Text(
-                "Welcome back, John Doe", // Placeholder user name
+                "Welcome back, Peter Kaphaso", // Placeholder user name
                 style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -181,10 +181,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Icon(icon,
               size: 35, color: Theme.of(context).primaryColor), // Medium size
           const SizedBox(height: 10),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          Flexible(
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              overflow: TextOverflow.visible, // Ensure text wraps correctly
+            ),
           ),
         ],
       ),
@@ -210,7 +213,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             title: Text(
               "Transaction #$index",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             subtitle: const Text(
               "MWK 10,000.00",

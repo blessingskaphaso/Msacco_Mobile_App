@@ -3,7 +3,7 @@ import 'signup_screen.dart'; // Import the signup screen
 import 'dashboard_screen.dart'; // Import the dashboard screen
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
