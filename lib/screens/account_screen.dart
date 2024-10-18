@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:msacco/screens/login_screen.dart';
 
 class AccountScreen extends StatelessWidget {
-  const AccountScreen({super.key});
+  const AccountScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +20,13 @@ class AccountScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        // Added SingleChildScrollView to enable scrolling
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Profile Picture
-            const Center(
+            Center(
               child: CircleAvatar(
                 radius: 50,
                 backgroundImage: AssetImage(
@@ -38,7 +36,7 @@ class AccountScreen extends StatelessWidget {
             const SizedBox(height: 20),
             const Center(
               child: Text(
-                "Peter Kaphaso", // Placeholder full name
+                "John Doe", // Placeholder full name
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
             ),
@@ -48,30 +46,30 @@ class AccountScreen extends StatelessWidget {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            const ListTile(
-              leading: Icon(Icons.person, color: Colors.green),
-              title: Text("Full Name"),
-              subtitle: Text("Peter Kaphaso"),
+            ListTile(
+              leading: const Icon(Icons.person, color: Colors.green),
+              title: const Text("Full Name"),
+              subtitle: const Text("John Doe"),
             ),
             const Divider(),
-            const ListTile(
-              leading: Icon(Icons.email, color: Colors.green),
-              title: Text("Email"),
-              subtitle: Text("blesskapha@outlook.com"),
+            ListTile(
+              leading: const Icon(Icons.email, color: Colors.green),
+              title: const Text("Email"),
+              subtitle: const Text("john.doe@example.com"),
             ),
             const Divider(),
-            const ListTile(
-              leading: Icon(Icons.phone, color: Colors.green),
-              title: Text("Phone Number"),
-              subtitle: Text("+265 88 280 1476"),
+            ListTile(
+              leading: const Icon(Icons.phone, color: Colors.green),
+              title: const Text("Phone Number"),
+              subtitle: const Text("+265 123 456 789"),
             ),
             const Divider(),
-            const ListTile(
-              leading: Icon(Icons.credit_card, color: Colors.green),
-              title: Text("Account Balance"),
-              subtitle: Text("MWK 100,000.00"),
+            ListTile(
+              leading: const Icon(Icons.credit_card, color: Colors.green),
+              title: const Text("Account Balance"),
+              subtitle: const Text("MWK 100,000.00"),
             ),
-            const SizedBox(height: 30), // Add some space before the button
+            const Spacer(),
             Center(
               child: ElevatedButton(
                 onPressed: () {
@@ -92,10 +90,9 @@ class AccountScreen extends StatelessWidget {
                           ),
                           ElevatedButton(
                             onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (context) => const LoginScreen()),
-                              );
+                              // Perform logout action
+                              Navigator.of(context)
+                                  .pushReplacementNamed('/login');
                             },
                             child: const Text("Log out"),
                           ),

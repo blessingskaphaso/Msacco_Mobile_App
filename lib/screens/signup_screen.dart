@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io'; // Required for File handling
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+  const SignUpScreen({Key? key}) : super(key: key);
 
   @override
   _SignUpScreenState createState() => _SignUpScreenState();

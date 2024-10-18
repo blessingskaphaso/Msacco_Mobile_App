@@ -3,7 +3,7 @@ import 'dart:async';
 import 'login_screen.dart'; // Import the login screen
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  const SplashScreen({Key? key}) : super(key: key);
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
