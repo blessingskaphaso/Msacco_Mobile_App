@@ -1,14 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:msacco/screens/account_screen.dart';
-import 'package:msacco/screens/documents_screen.dart';
-import 'package:msacco/screens/fund_transfer_screen.dart';
-import 'package:msacco/screens/loan_application_screen.dart';
-import 'package:msacco/screens/loan_status_screen.dart';
-import 'package:msacco/screens/notifications_screen.dart';
-import 'package:msacco/screens/settings_screen.dart';
-import 'package:msacco/screens/support_screen.dart';
-import 'package:msacco/screens/transaction_history_screen.dart';
-import 'package:msacco/screens/view_balances_screen.dart'; // Import the Support Screen
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -122,7 +113,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(height: 20),
 
-            // Quick Actions Grid (3x3 layout)
+            // Quick Actions Grid (3x2 layout)
             Text(
               "Quick Actions",
               style: Theme.of(context)
@@ -138,74 +129,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               children: [
-                _buildQuickActionCard(Icons.monetization_on, "Transfer Funds",
-                    () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const TransferFundsScreen()),
-                  );
-                }),
-                _buildQuickActionCard(Icons.account_balance, "Apply for Loan",
-                    () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const LoanApplicationScreen()),
-                  );
-                }),
-                _buildQuickActionCard(Icons.history, "Transaction History", () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const TransactionHistoryScreen()),
-                  );
-                }),
-                _buildQuickActionCard(Icons.pie_chart, "View Balances", () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ViewBalancesScreen()),
-                  );
-                }),
-                _buildQuickActionCard(Icons.bar_chart, "Loan Status", () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const LoanStatusScreen()),
-                  );
-                }),
-                _buildQuickActionCard(Icons.notifications, "Notifications", () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const NotificationsScreen()),
-                  );
-                }),
-                _buildQuickActionCard(Icons.folder, "My Documents", () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const MyDocumentsScreen()),
-                  );
-                }),
-                _buildQuickActionCard(Icons.settings, "Settings", () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SettingsScreen()),
-                  );
-                }),
-                _buildQuickActionCard(Icons.help_outline, "Help & Support", () {
-                  // Navigate to Help & Support screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SupportScreen()),
-                  );
-                }),
+                _buildQuickActionCard(Icons.monetization_on, "Transfer Funds"),
+                _buildQuickActionCard(Icons.account_balance, "Apply for Loan"),
+                _buildQuickActionCard(Icons.history, "Transaction History"),
+                _buildQuickActionCard(Icons.notifications, "Notifications"),
+                _buildQuickActionCard(Icons.settings, "Settings"),
+                _buildQuickActionCard(Icons.help_outline, "Help & Support"),
               ],
             ),
+            const SizedBox(height: 30),
+
+            // Recent Transactions
+            Text(
+              "Recent Transactions",
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall!
+                  .copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            _buildTransactionList(),
+
+            const SizedBox(height: 20),
+
+            // Notification Banner
+            _buildNotificationBanner(),
           ],
         ),
       ),
@@ -213,40 +161,100 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   // Quick Action Card Widget (Medium-sized icons)
-  Widget _buildQuickActionCard(IconData icon, String label,
-      [VoidCallback? onTap]) {
-    return GestureDetector(
-      onTap: onTap, // Navigate to appropriate screen
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              spreadRadius: 2,
-              blurRadius: 5,
+  Widget _buildQuickActionCard(IconData icon, String label) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            spreadRadius: 2,
+            blurRadius: 5,
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon,
+              size: 35, color: Theme.of(context).primaryColor), // Medium size
+          const SizedBox(height: 10),
+          Flexible(
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              overflow: TextOverflow.visible, // Ensure text wraps correctly
             ),
-          ],
-        ),
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon,
-                size: 35, color: Theme.of(context).primaryColor), // Medium size
-            const SizedBox(height: 10),
-            Flexible(
-              child: Text(
-                label,
-                textAlign: TextAlign.center,
-                style:
-                    const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                overflow: TextOverflow.visible, // Ensure text wraps correctly
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Recent Transactions List
+  Widget _buildTransactionList() {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 3, // Example recent transactions count
+      itemBuilder: (context, index) {
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+              child: Icon(
+                Icons.monetization_on,
+                color: Theme.of(context).primaryColor,
               ),
             ),
-          ],
-        ),
+            title: Text(
+              "Transaction #$index",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            subtitle: const Text(
+              "MWK 10,000.00",
+              style: TextStyle(color: Colors.grey),
+            ),
+            trailing: const Text("2023-10-05"),
+          ),
+        );
+      },
+    );
+  }
+
+  // Notification Banner Widget
+  Widget _buildNotificationBanner() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.green[300], // Banner color
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            spreadRadius: 2,
+            blurRadius: 5,
+          ),
+        ],
+      ),
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            "Your loan application has been approved!",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Icon(Icons.check_circle, color: Colors.black),
+        ],
       ),
     );
   }

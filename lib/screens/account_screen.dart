@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:msacco/screens/login_screen.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({Key? key}) : super(key: key);
@@ -20,7 +21,7 @@ class AccountScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,7 +37,7 @@ class AccountScreen extends StatelessWidget {
             const SizedBox(height: 20),
             const Center(
               child: Text(
-                "John Doe", // Placeholder full name
+                "Peter B Kaphaso", // Placeholder full name
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
             ),
@@ -49,13 +50,13 @@ class AccountScreen extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.person, color: Colors.green),
               title: const Text("Full Name"),
-              subtitle: const Text("John Doe"),
+              subtitle: const Text("Peter B Kaphaso"),
             ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.email, color: Colors.green),
               title: const Text("Email"),
-              subtitle: const Text("john.doe@example.com"),
+              subtitle: const Text("blesskapha@outlook.com"),
             ),
             const Divider(),
             ListTile(
@@ -69,7 +70,7 @@ class AccountScreen extends StatelessWidget {
               title: const Text("Account Balance"),
               subtitle: const Text("MWK 100,000.00"),
             ),
-            const Spacer(),
+            const SizedBox(height: 30), // Add some space before the button
             Center(
               child: ElevatedButton(
                 onPressed: () {
@@ -90,9 +91,12 @@ class AccountScreen extends StatelessWidget {
                           ),
                           ElevatedButton(
                             onPressed: () {
-                              // Perform logout action
-                              Navigator.of(context)
-                                  .pushReplacementNamed('/login');
+                              // Replace the current screen with the LoginScreen
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                  builder: (context) => const LoginScreen(),
+                                ),
+                              );
                             },
                             child: const Text("Log out"),
                           ),
