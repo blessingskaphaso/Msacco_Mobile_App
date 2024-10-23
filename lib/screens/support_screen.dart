@@ -25,16 +25,19 @@ class SupportScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               _buildFAQItem(
+                context,
                 "How can I apply for a loan?",
                 "You can apply for a loan by navigating to the 'Apply for Loan' option in the Quick Actions on the dashboard.",
               ),
               const Divider(),
               _buildFAQItem(
+                context,
                 "How do I withdraw funds?",
                 "To withdraw funds, go to the 'Transfer Funds' option and select your preferred withdrawal method.",
               ),
               const Divider(),
               _buildFAQItem(
+                context,
                 "What is the limit for loan applications?",
                 "You can apply for a loan amount that is not more than three times your combined shares and deposits.",
               ),
@@ -97,7 +100,7 @@ class SupportScreen extends StatelessWidget {
   }
 
   // Widget to display FAQ items
-  Widget _buildFAQItem(String question, String answer) {
+  Widget _buildFAQItem(BuildContext context, String question, String answer) {
     return Padding(
       padding:
           const EdgeInsets.symmetric(vertical: 8.0), // Add vertical spacing
@@ -106,18 +109,22 @@ class SupportScreen extends StatelessWidget {
         children: [
           Text(
             question,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Theme.of(context).primaryColor,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             answer,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: Colors.black54,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Theme.of(context).primaryColor,
               height: 1.5, // Line height for better readability
             ),
           ),

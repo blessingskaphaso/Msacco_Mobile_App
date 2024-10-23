@@ -27,12 +27,15 @@ class ViewBalancesScreen extends StatelessWidget {
             const Text(
               'Your Balances',
               style: TextStyle(
-                  fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black),
             ),
             const SizedBox(height: 20),
 
             // Shares Balance Card
             _buildBalanceCard(
+              context,
               'Shares Balance',
               'MWK ${shares.toStringAsFixed(2)}',
               Icons.account_balance_wallet,
@@ -41,6 +44,7 @@ class ViewBalancesScreen extends StatelessWidget {
 
             // Deposits Balance Card
             _buildBalanceCard(
+              context,
               'Deposits Balance',
               'MWK ${deposits.toStringAsFixed(2)}',
               Icons.savings,
@@ -49,6 +53,7 @@ class ViewBalancesScreen extends StatelessWidget {
 
             // Loan Balance Card
             _buildBalanceCard(
+              context,
               'Outstanding Loan',
               'MWK ${loan.toStringAsFixed(2)}',
               Icons.credit_card,
@@ -56,24 +61,38 @@ class ViewBalancesScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 20),
-            Divider(),
+            const Divider(),
             const SizedBox(height: 10),
 
             // Summary of Holdings
             const Text(
               'Summary',
               style: TextStyle(
-                  fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black),
             ),
             const SizedBox(height: 10),
             Text(
               'Total Holdings (Shares + Deposits): MWK ${totalHoldings.toStringAsFixed(2)}',
-              style: const TextStyle(fontSize: 16, color: Colors.black),
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Theme.of(context).primaryColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
             ),
             const SizedBox(height: 10),
             Text(
               'Available for Loan: MWK ${availableForLoan.toStringAsFixed(2)}',
-              style: const TextStyle(fontSize: 16, color: Colors.black),
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Theme.of(context).primaryColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
             ),
           ],
         ),
@@ -82,8 +101,8 @@ class ViewBalancesScreen extends StatelessWidget {
   }
 
   // Helper method to build each balance card
-  Widget _buildBalanceCard(
-      String title, String balance, IconData icon, Color iconColor) {
+  Widget _buildBalanceCard(BuildContext context, String title, String balance,
+      IconData icon, Color iconColor) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10),
       child: ListTile(
@@ -93,11 +112,17 @@ class ViewBalancesScreen extends StatelessWidget {
         ),
         title: Text(
           title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
           balance,
-          style: const TextStyle(fontSize: 16, color: Colors.black),
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Theme.of(context).primaryColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
         ),
       ),
     );

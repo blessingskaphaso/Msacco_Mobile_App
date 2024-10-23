@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; // Import provider
 import 'screens/splash_screen.dart'; // Import the splash screen
+import 'providers/theme_provider.dart'; // Import the ThemeProvider
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 // Define Army Green color
@@ -13,11 +20,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'MSACCO App',
-      themeMode:
-          ThemeMode.system, // Automatically switch based on phone's theme
+      themeMode: themeProvider.themeMode, // Use ThemeProvider's theme mode
       theme: ThemeData(
         brightness:
             Brightness.light, // Set brightness to light for the light theme

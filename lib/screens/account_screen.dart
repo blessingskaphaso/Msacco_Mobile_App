@@ -14,9 +14,9 @@ class AccountScreen extends StatelessWidget {
         actions: [
           // Edit Button on the AppBar
           IconButton(
-            icon: const Icon(Icons.edit),
+            icon: const Icon(Icons.edit, color: Colors.white),
             onPressed: () {
-              // Add edit functionality here
+              _showEditProfileDialog(context);
             },
           ),
         ],
@@ -37,7 +37,7 @@ class AccountScreen extends StatelessWidget {
             const SizedBox(height: 20),
             const Center(
               child: Text(
-                "Peter B Kaphaso", // Placeholder full name
+                "John Doe", // Placeholder full name
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
             ),
@@ -47,29 +47,17 @@ class AccountScreen extends StatelessWidget {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            ListTile(
-              leading: const Icon(Icons.person, color: Colors.green),
-              title: const Text("Full Name"),
-              subtitle: const Text("Peter B Kaphaso"),
-            ),
+            _buildAccountDetailTile(
+                context, Icons.person, "Full Name", "John Doe"),
             const Divider(),
-            ListTile(
-              leading: const Icon(Icons.email, color: Colors.green),
-              title: const Text("Email"),
-              subtitle: const Text("blesskapha@outlook.com"),
-            ),
+            _buildAccountDetailTile(
+                context, Icons.email, "Email", "john.doe@example.com"),
             const Divider(),
-            ListTile(
-              leading: const Icon(Icons.phone, color: Colors.green),
-              title: const Text("Phone Number"),
-              subtitle: const Text("+265 123 456 789"),
-            ),
+            _buildAccountDetailTile(
+                context, Icons.phone, "Phone Number", "+265 123 456 789"),
             const Divider(),
-            ListTile(
-              leading: const Icon(Icons.credit_card, color: Colors.green),
-              title: const Text("Account Balance"),
-              subtitle: const Text("MWK 100,000.00"),
-            ),
+            _buildAccountDetailTile(context, Icons.credit_card,
+                "Account Balance", "MWK 100,000.00"),
             const SizedBox(height: 30), // Add some space before the button
             Center(
               child: ElevatedButton(
@@ -92,10 +80,10 @@ class AccountScreen extends StatelessWidget {
                           ElevatedButton(
                             onPressed: () {
                               // Replace the current screen with the LoginScreen
-                              Navigator.of(context).pushReplacement(
+                              Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                  builder: (context) => const LoginScreen(),
-                                ),
+                                    builder: (_) => const LoginScreen()),
+                                (Route<dynamic> route) => false,
                               );
                             },
                             child: const Text("Log out"),
@@ -122,6 +110,88 @@ class AccountScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  // Helper method to build ListTile for account details
+  Widget _buildAccountDetailTile(
+      BuildContext context, IconData icon, String title, String subtitle) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.green),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white
+              : Colors.black,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: TextStyle(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey[300]
+              : Colors.grey[700],
+        ),
+      ),
+    );
+  }
+
+  // Method to show Edit Profile dialog
+  void _showEditProfileDialog(BuildContext context) {
+    final TextEditingController nameController =
+        TextEditingController(text: "John Doe");
+    final TextEditingController emailController =
+        TextEditingController(text: "john.doe@example.com");
+    final TextEditingController phoneController =
+        TextEditingController(text: "+265 123 456 789");
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Edit Profile"),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: "Full Name"),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: emailController,
+                  decoration: const InputDecoration(labelText: "Email"),
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: phoneController,
+                  decoration: const InputDecoration(labelText: "Phone Number"),
+                  keyboardType: TextInputType.phone,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Update profile information logic can go here
+                Navigator.of(context).pop(); // Close the dialog after saving
+              },
+              child: const Text("Save"),
+            ),
+          ],
+        );
+      },
     );
   }
 }

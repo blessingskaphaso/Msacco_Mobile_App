@@ -70,25 +70,46 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       String title, String description, DateTime timestamp) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
+      color: Theme.of(context).brightness == Brightness.dark
+          ? Colors.grey[850] // Darker background for dark mode
+          : Colors.white, // White background for light mode
       child: ListTile(
-        leading: Icon(Icons.notifications,
-            color: Theme.of(context).primaryColor, size: 35),
+        leading: Icon(
+          Icons.notifications,
+          color: Theme.of(context).primaryColor,
+          size: 35,
+        ),
         title: Text(
           title,
-          style: const TextStyle(
-              fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black),
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Theme.of(context).primaryColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               description,
-              style: const TextStyle(fontSize: 14, color: Colors.grey),
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[300]
+                    : Colors.grey,
+              ),
             ),
             const SizedBox(height: 5),
             Text(
               _formatTimestamp(timestamp),
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[400]
+                    : Colors.grey,
+              ),
             ),
           ],
         ),

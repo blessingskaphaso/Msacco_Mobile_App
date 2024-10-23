@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'signup_screen.dart'; // Import the signup screen
 import 'dashboard_screen.dart'; // Import the dashboard screen
+import 'package:local_auth/local_auth.dart'; // Import Local Authentication package
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -14,6 +15,27 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
 
   bool _obscurePassword = true; // For hiding and showing the password
+  final LocalAuthentication auth =
+      LocalAuthentication(); // Local Authentication instance
+
+  Future<void> _authenticateWithBiometrics() async {
+    try {
+      bool authenticated = await auth.authenticate(
+        localizedReason: 'Please authenticate to access your account',
+        options: const AuthenticationOptions(
+          stickyAuth: true,
+          biometricOnly: true,
+        ),
+      );
+      if (authenticated) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const DashboardScreen()),
+        );
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +126,23 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 child: const Text('Login',
                     style: TextStyle(fontSize: 18, color: Colors.white)),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Fingerprint Icon for Login
+              Center(
+                child: IconButton(
+                  icon: Icon(
+                    Icons.fingerprint,
+                    size: 50,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  onPressed: () {
+                    // Trigger fingerprint authentication
+                    _authenticateWithBiometrics();
+                  },
+                ),
               ),
 
               const SizedBox(height: 10),

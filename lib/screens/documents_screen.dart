@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class MyDocumentsScreen extends StatefulWidget {
   const MyDocumentsScreen({Key? key}) : super(key: key);
@@ -11,6 +13,20 @@ class _MyDocumentsScreenState extends State<MyDocumentsScreen> {
   bool isLoanFormExpanded = false;
   bool isWithdrawalFormExpanded = false;
   bool isPromiseToPayFormExpanded = false; // New bool for Promise to Pay form
+
+  File? _signatureImage; // To store the selected signature image
+  final ImagePicker _picker = ImagePicker(); // Initialize the image picker
+
+  Future<void> _pickSignatureImage() async {
+    final XFile? pickedFile =
+        await _picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _signatureImage = File(pickedFile.path);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,14 +87,42 @@ class _MyDocumentsScreenState extends State<MyDocumentsScreen> {
   // Builds each document card
   Widget _buildDocumentCard(
       String title, bool isExpanded, VoidCallback onTap, Widget formContent) {
-    return Card(
+    return GestureDetector(
+      onTap: onTap,
       child: Column(
         children: [
-          ListTile(
-            title: Text(title,
-                style: const TextStyle(fontWeight: FontWeight.bold)),
-            trailing: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
-            onTap: onTap,
+          Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Colors.grey[200]
+                  : Colors.grey[700],
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  spreadRadius: 1,
+                  blurRadius: 5,
+                ),
+              ],
+            ),
+            child: ListTile(
+              leading: Icon(Icons.insert_drive_file,
+                  color: Theme.of(context).primaryColor),
+              title: Text(title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.black
+                        : Colors.white,
+                  )),
+              trailing: Icon(
+                isExpanded ? Icons.expand_less : Icons.expand_more,
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.black
+                    : Colors.white,
+              ),
+              onTap: onTap,
+            ),
           ),
           if (isExpanded) formContent,
         ],
@@ -118,7 +162,13 @@ class _MyDocumentsScreenState extends State<MyDocumentsScreen> {
             onPressed: () {
               // Submit logic for loan application
             },
-            child: const Text("Submit Loan Application"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+            ),
+            child: const Text(
+              "Submit Loan Application",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -150,7 +200,13 @@ class _MyDocumentsScreenState extends State<MyDocumentsScreen> {
             onPressed: () {
               // Submit logic for withdrawal transfer
             },
-            child: const Text("Submit Withdrawal Transfer"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+            ),
+            child: const Text(
+              "Submit Withdrawal Transfer",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -168,15 +224,35 @@ class _MyDocumentsScreenState extends State<MyDocumentsScreen> {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           _buildTextField("Borrower's Name"),
           _buildTextField("Registration Number"),
-          _buildTextField("Signature"),
-          _buildTextField("Date"),
-          const SizedBox(height: 20),
-          const Text("Witness Information",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          _buildTextField("Witness Name"),
-          _buildTextField("Witness Registration Number"),
-          _buildTextField("Witness Signature"),
-          _buildTextField("Witness Date"),
+          const SizedBox(height: 8),
+          GestureDetector(
+            onTap: _pickSignatureImage,
+            child: Container(
+              height: 50,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Theme.of(context).primaryColor,
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(8),
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.grey[200]
+                    : Colors.grey[700],
+              ),
+              child: Center(
+                child: _signatureImage == null
+                    ? const Text("Upload Signature",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold))
+                    : Image.file(
+                        _signatureImage!,
+                        height: 50,
+                        fit: BoxFit.contain,
+                      ),
+              ),
+            ),
+          ),
           const SizedBox(height: 20),
           const Text("Interest Rate & Additional Provisions",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
@@ -187,7 +263,13 @@ class _MyDocumentsScreenState extends State<MyDocumentsScreen> {
             onPressed: () {
               // Submit logic for promise to pay form
             },
-            child: const Text("Submit Promise to Pay"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+            ),
+            child: const Text(
+              "Submit Promise to Pay",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -201,6 +283,10 @@ class _MyDocumentsScreenState extends State<MyDocumentsScreen> {
       child: TextField(
         decoration: InputDecoration(
           labelText: label,
+          filled: true,
+          fillColor: Theme.of(context).brightness == Brightness.light
+              ? Colors.grey[200]
+              : Colors.grey[700],
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         ),
       ),

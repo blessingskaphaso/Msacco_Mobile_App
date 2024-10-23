@@ -18,7 +18,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  File? _idImage; // To store the selected image
+  List<File> _idImages = []; // To store the selected images
   final ImagePicker _picker = ImagePicker(); // Initialize the image picker
 
   bool _obscurePassword = true; // Hide/Show password for password field
@@ -31,7 +31,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     if (pickedFile != null) {
       setState(() {
-        _idImage = File(pickedFile.path);
+        _idImages.add(File(pickedFile.path));
+      });
+    }
+  }
+
+  Future<void> _takePhoto() async {
+    final XFile? pickedFile =
+        await _picker.pickImage(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      setState(() {
+        _idImages.add(File(pickedFile.path));
       });
     }
   }
@@ -50,7 +61,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             children: <Widget>[
               // App Logo
               Center(
-                child: Image.asset('assets/images/app_logo.png', height: 120),
+                child: Image.asset('assets/images/app_logo.png', height: 90),
               ),
               const SizedBox(height: 40),
 
@@ -67,8 +78,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     borderRadius: BorderRadius.circular(30.0),
                     borderSide: BorderSide.none,
                   ),
-                  prefixIcon: Icon(Icons.person,
-                      color: Theme.of(context).iconTheme.color),
+                  prefixIcon: Icon(Icons.person, color: Colors.white),
                 ),
               ),
               const SizedBox(height: 20),
@@ -87,8 +97,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     borderRadius: BorderRadius.circular(30.0),
                     borderSide: BorderSide.none,
                   ),
-                  prefixIcon: Icon(Icons.email,
-                      color: Theme.of(context).iconTheme.color),
+                  prefixIcon: Icon(Icons.email, color: Colors.white),
                 ),
               ),
               const SizedBox(height: 20),
@@ -107,8 +116,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     borderRadius: BorderRadius.circular(30.0),
                     borderSide: BorderSide.none,
                   ),
-                  prefixIcon: Icon(Icons.phone,
-                      color: Theme.of(context).iconTheme.color),
+                  prefixIcon: Icon(Icons.phone, color: Colors.white),
                 ),
               ),
               const SizedBox(height: 20),
@@ -127,14 +135,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     borderRadius: BorderRadius.circular(30.0),
                     borderSide: BorderSide.none,
                   ),
-                  prefixIcon: Icon(Icons.lock,
-                      color: Theme.of(context).iconTheme.color),
+                  prefixIcon: Icon(Icons.lock, color: Colors.white),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword
                           ? Icons.visibility
                           : Icons.visibility_off,
-                      color: Theme.of(context).iconTheme.color,
+                      color: Colors.white,
                     ),
                     onPressed: () {
                       setState(() {
@@ -160,14 +167,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     borderRadius: BorderRadius.circular(30.0),
                     borderSide: BorderSide.none,
                   ),
-                  prefixIcon: Icon(Icons.lock_outline,
-                      color: Theme.of(context).iconTheme.color),
+                  prefixIcon: Icon(Icons.lock_outline, color: Colors.white),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscureConfirmPassword
                           ? Icons.visibility
                           : Icons.visibility_off,
-                      color: Theme.of(context).iconTheme.color,
+                      color: Colors.white,
                     ),
                     onPressed: () {
                       setState(() {
@@ -202,10 +208,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Icon(Icons.cloud_upload,
-                              size: 50, color: Colors.grey),
+                              size: 50, color: Colors.white),
                           const SizedBox(height: 10),
                           Text(
-                            'Drop your file here\nor',
+                            'Upload Your National Id Card\nor Passport',
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.light
@@ -214,12 +220,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             textAlign: TextAlign.center,
                           ),
-                          ElevatedButton(
-                            onPressed: _pickImage,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Theme.of(context).primaryColor,
-                            ),
-                            child: const Text('Browse'),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton.icon(
+                                onPressed: _pickImage,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      Theme.of(context).primaryColor,
+                                ),
+                                icon: const Icon(Icons.file_upload,
+                                    color: Colors.white),
+                                label: const Text('Upload',
+                                    style: TextStyle(color: Colors.white)),
+                              ),
+                              const SizedBox(width: 10),
+                              ElevatedButton.icon(
+                                onPressed: _takePhoto,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      Theme.of(context).primaryColor,
+                                ),
+                                icon: const Icon(Icons.camera_alt,
+                                    color: Colors.white),
+                                label: const Text('Camera',
+                                    style: TextStyle(color: Colors.white)),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -229,29 +256,45 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               const SizedBox(height: 10),
 
-              // Display the selected image with a border
-              if (_idImage != null)
+              // Display the selected images with a border and cancel button
+              if (_idImages.isNotEmpty)
                 Column(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            color: Theme.of(context).primaryColor, width: 2.0),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Image.file(_idImage!,
-                            height: 150, fit: BoxFit.cover),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'ID Document Selected',
-                      style: TextStyle(
-                          color: Theme.of(context).primaryColor, fontSize: 16),
-                    ),
-                  ],
+                  children: _idImages.map((image) {
+                    return Stack(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: Theme.of(context).primaryColor,
+                                width: 2.0),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image.file(image,
+                                height: 150, fit: BoxFit.cover),
+                          ),
+                        ),
+                        Positioned(
+                          top: 5,
+                          right: 5,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _idImages.remove(image);
+                              });
+                            },
+                            child: const Icon(
+                              Icons.cancel,
+                              color: Colors.red,
+                              size: 24,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  }).toList(),
                 ),
 
               const SizedBox(height: 20),

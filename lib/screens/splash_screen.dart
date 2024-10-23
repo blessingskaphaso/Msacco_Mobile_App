@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'login_screen.dart'; // Import the login screen
+
+import 'package:msacco/screens/login_screen.dart'; // Needed for the delay functionality
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -13,9 +14,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-
-    // Timer to navigate to the login page after 3 seconds
-    Timer(const Duration(seconds: 3), () {
+    Timer(const Duration(seconds: 5), () {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const LoginScreen()),
       );
@@ -25,18 +24,59 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor, // Army Green background
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            // Display your app logo here
-            Image.asset('assets/images/app_logo.png', width: 150, height: 150),
-            const SizedBox(height: 20),
-            const CircularProgressIndicator(
-                color: Colors.white), // Loading indicator
-          ],
-        ),
+      backgroundColor:
+          Theme.of(context).primaryColor, // Primary color as background
+      body: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.5,
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(100),
+                  bottomRight: Radius.circular(100),
+                ),
+              ),
+            ),
+          ),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/images/app_logo.png',
+                  height: 120,
+                ),
+                const SizedBox(height: 30),
+                const Text(
+                  "Msacco",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 30),
+                const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  strokeWidth: 3.0,
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  "Loading...",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
