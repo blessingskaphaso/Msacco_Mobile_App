@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io'; // Required for File handling
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({Key? key}) : super(key: key);
+  const SignUpScreen({super.key});
 
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
@@ -18,7 +18,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  List<File> _idImages = []; // To store the selected images
+  final List<File> _idImages = []; // To store the selected images
   final ImagePicker _picker = ImagePicker(); // Initialize the image picker
 
   bool _obscurePassword = true; // Hide/Show password for password field
@@ -78,7 +78,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     borderRadius: BorderRadius.circular(30.0),
                     borderSide: BorderSide.none,
                   ),
-                  prefixIcon: Icon(Icons.person, color: Colors.white),
+                  prefixIcon: const Icon(Icons.person, color: Colors.white),
                 ),
               ),
               const SizedBox(height: 20),
@@ -97,7 +97,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     borderRadius: BorderRadius.circular(30.0),
                     borderSide: BorderSide.none,
                   ),
-                  prefixIcon: Icon(Icons.email, color: Colors.white),
+                  prefixIcon: const Icon(Icons.email, color: Colors.white),
                 ),
               ),
               const SizedBox(height: 20),
@@ -116,7 +116,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     borderRadius: BorderRadius.circular(30.0),
                     borderSide: BorderSide.none,
                   ),
-                  prefixIcon: Icon(Icons.phone, color: Colors.white),
+                  prefixIcon: const Icon(Icons.phone, color: Colors.white),
                 ),
               ),
               const SizedBox(height: 20),
@@ -135,7 +135,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     borderRadius: BorderRadius.circular(30.0),
                     borderSide: BorderSide.none,
                   ),
-                  prefixIcon: Icon(Icons.lock, color: Colors.white),
+                  prefixIcon: const Icon(Icons.lock, color: Colors.white),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword
@@ -167,7 +167,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     borderRadius: BorderRadius.circular(30.0),
                     borderSide: BorderSide.none,
                   ),
-                  prefixIcon: Icon(Icons.lock_outline, color: Colors.white),
+                  prefixIcon: const Icon(Icons.lock_outline, color: Colors.white),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscureConfirmPassword

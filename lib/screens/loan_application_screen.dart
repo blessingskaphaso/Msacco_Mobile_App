@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class LoanApplicationScreen extends StatefulWidget {
-  const LoanApplicationScreen({Key? key}) : super(key: key);
+  const LoanApplicationScreen({super.key});
 
   @override
   _LoanApplicationScreenState createState() => _LoanApplicationScreenState();
@@ -21,9 +21,9 @@ class _LoanApplicationScreenState extends State<LoanApplicationScreen> {
 
   double _maxLoanAmount =
       0.0; // To be calculated based on shares, deposits, and loan
-  double _shares = 100000.0; // Placeholder value for shares
-  double _deposits = 200000.0; // Placeholder value for deposits
-  double _loan = 50000.0; // Placeholder value for outstanding loan
+  final double _shares = 100000.0; // Placeholder value for shares
+  final double _deposits = 200000.0; // Placeholder value for deposits
+  final double _loan = 50000.0; // Placeholder value for outstanding loan
 
   @override
   void initState() {

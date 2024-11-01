@@ -4,7 +4,7 @@ import 'dashboard_screen.dart'; // Import the dashboard screen
 import 'package:local_auth/local_auth.dart'; // Import Local Authentication package
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   _LoginScreenState createState() => _LoginScreenState();

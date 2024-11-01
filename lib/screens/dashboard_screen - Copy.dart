@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:msacco/screens/account_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+  const DashboardScreen({super.key});
 
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
@@ -213,7 +213,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             title: Text(
               "Transaction #$index",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             subtitle: const Text(
               "MWK 10,000.00",

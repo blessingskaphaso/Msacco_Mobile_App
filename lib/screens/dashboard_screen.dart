@@ -11,7 +11,7 @@ import 'package:msacco/screens/transaction_history_screen.dart';
 import 'package:msacco/screens/view_balances_screen.dart'; // Import the Support Screen
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+  const DashboardScreen({super.key});
 
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
@@ -165,7 +165,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ViewBalancesScreen()),
+                        builder: (context) => const ViewBalancesScreen()),
                   );
                 }),
                 _buildQuickActionCard(Icons.bar_chart, "Loan Status", () {
