@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:msacco/screens/login_screen.dart';
 
 class AccountScreen extends StatelessWidget {
-  const AccountScreen({Key? key}) : super(key: key);
+  const AccountScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class AccountScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Profile Picture
-            Center(
+            const Center(
               child: CircleAvatar(
                 radius: 50,
                 backgroundImage: AssetImage(
@@ -37,7 +37,7 @@ class AccountScreen extends StatelessWidget {
             const SizedBox(height: 20),
             const Center(
               child: Text(
-                "John Doe", // Placeholder full name
+                "Peter B. Kaphaso", // Placeholder full name
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
             ),
@@ -48,13 +48,13 @@ class AccountScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             _buildAccountDetailTile(
-                context, Icons.person, "Full Name", "John Doe"),
+                context, Icons.person, "Full Name", "Peter B. Kaphaso"),
             const Divider(),
             _buildAccountDetailTile(
-                context, Icons.email, "Email", "john.doe@example.com"),
+                context, Icons.email, "Email", "blesskapha@outlook.com"),
             const Divider(),
             _buildAccountDetailTile(
-                context, Icons.phone, "Phone Number", "+265 123 456 789"),
+                context, Icons.phone, "Phone Number", "+265 995 485 733"),
             const Divider(),
             _buildAccountDetailTile(context, Icons.credit_card,
                 "Account Balance", "MWK 100,000.00"),
@@ -141,11 +141,11 @@ class AccountScreen extends StatelessWidget {
   // Method to show Edit Profile dialog
   void _showEditProfileDialog(BuildContext context) {
     final TextEditingController nameController =
-        TextEditingController(text: "John Doe");
+        TextEditingController(text: "Peter B. Kaphaso");
     final TextEditingController emailController =
-        TextEditingController(text: "john.doe@example.com");
+        TextEditingController(text: "blesskapha@outlook.com");
     final TextEditingController phoneController =
-        TextEditingController(text: "+265 123 456 789");
+        TextEditingController(text: "+265 995 485 733");
 
     showDialog(
       context: context,

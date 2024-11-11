@@ -4,7 +4,7 @@ import 'package:msacco/providers/theme_provider.dart';
 import 'package:msacco/screens/account_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  const SettingsScreen({super.key});
 
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
@@ -112,23 +112,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
       builder: (context) {
         return AlertDialog(
           title: const Text("Change Password"),
-          content: Column(
+          content: const Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 decoration:
-                    const InputDecoration(labelText: "Current Password"),
+                    InputDecoration(labelText: "Current Password"),
                 obscureText: true,
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               TextField(
-                decoration: const InputDecoration(labelText: "New Password"),
+                decoration: InputDecoration(labelText: "New Password"),
                 obscureText: true,
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               TextField(
                 decoration:
-                    const InputDecoration(labelText: "Confirm New Password"),
+                    InputDecoration(labelText: "Confirm New Password"),
                 obscureText: true,
               ),
             ],
@@ -232,12 +232,12 @@ class SettingTile extends StatelessWidget {
   final VoidCallback onTap;
 
   const SettingTile({
-    Key? key,
+    super.key,
     required this.icon,
     required this.title,
     required this.iconColor,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

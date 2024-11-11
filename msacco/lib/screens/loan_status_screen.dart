@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class LoanStatusScreen extends StatefulWidget {
-  const LoanStatusScreen({Key? key}) : super(key: key);
+  const LoanStatusScreen({super.key});
 
   @override
   _LoanStatusScreenState createState() => _LoanStatusScreenState();
@@ -11,7 +11,7 @@ class LoanStatusScreen extends StatefulWidget {
 class _LoanStatusScreenState extends State<LoanStatusScreen> {
   String? _selectedStatusFilter; // Filter by loan status
 
-  double _currentLoanAmount = 50000.0; // Placeholder for current loan amount
+  final double _currentLoanAmount = 50000.0; // Placeholder for current loan amount
 
   final List<Map<String, dynamic>> _loans = [
     {
@@ -36,7 +36,7 @@ class _LoanStatusScreenState extends State<LoanStatusScreen> {
     },
   ];
 
-  List<String> _statuses = ["All", "Pending", "Approved", "Rejected"];
+  final List<String> _statuses = ["All", "Pending", "Approved", "Rejected"];
 
   // Filter loans by the selected status
   List<Map<String, dynamic>> _getFilteredLoans() {

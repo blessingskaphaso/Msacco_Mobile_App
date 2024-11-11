@@ -1,7 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class CacheManager {
-  final _storage = FlutterSecureStorage();
+  final _storage = const FlutterSecureStorage();
 
   // Save the auth token securely
   Future<void> saveToken(String token) async {

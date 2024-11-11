@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:msacco/screens/login_screen.dart'; // Needed for the delay functionality
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   _SplashScreenState createState() => _SplashScreenState();

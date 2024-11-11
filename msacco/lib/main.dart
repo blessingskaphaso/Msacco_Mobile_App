@@ -72,7 +72,7 @@ class MyApp extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide(color: armyGreen),
+            borderSide: const BorderSide(color: armyGreen),
           ),
         ),
       ),
@@ -110,7 +110,7 @@ class MyApp extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide(color: armyGreen),
+            borderSide: const BorderSide(color: armyGreen),
           ),
         ),
       ),
