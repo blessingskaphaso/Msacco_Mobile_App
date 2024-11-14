@@ -14,12 +14,13 @@ return new class extends Migration
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->string('account_number')->unique();
+            $table->string('account_number', 6)->unique(); // 6-digit account number starting with 3
             $table->decimal('share_balance', 15, 2)->default(0);
             $table->decimal('deposit_balance', 15, 2)->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
+
     }
 
 

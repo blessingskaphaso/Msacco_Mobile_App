@@ -6,7 +6,7 @@ import 'package:msacco/widgets/loading_widget.dart';
 import 'package:msacco/widgets/message_widget.dart';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+  const SignUpScreen({Key? key}) : super(key: key);
 
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
@@ -137,7 +137,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ),
         ),
-        if (isLoading) const LoadingWidget(),
+        if (isLoading) LoadingWidget(),
       ],
     );
   }

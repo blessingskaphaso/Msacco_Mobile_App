@@ -10,7 +10,14 @@ class Transaction extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['account_id', 'type', 'amount', 'transaction_date', 'status'];
+    protected $fillable = [
+        'account_id',
+        'type',
+        'amount',
+        'transaction_date',
+        'source',
+        'destination',
+    ];
 
     public function account()
     {

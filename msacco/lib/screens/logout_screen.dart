@@ -5,7 +5,7 @@ import 'package:msacco/screens/login_screen.dart';
 import 'package:msacco/widgets/loading_widget.dart';
 
 class LogoutScreen extends StatelessWidget {
-  const LogoutScreen({super.key});
+  const LogoutScreen({Key? key}) : super(key: key);
 
   Future<void> _logout(BuildContext context) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);

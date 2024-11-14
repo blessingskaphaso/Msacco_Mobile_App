@@ -37,30 +37,34 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Account Routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/accounts', [AccountController::class, 'index']);
-    Route::post('/accounts', [AccountController::class, 'store']);
-    Route::get('/accounts/{account}', [AccountController::class, 'show']);
-    Route::put('/accounts/{account}', [AccountController::class, 'update']);
-    Route::delete('/accounts/{account}', [AccountController::class, 'destroy']);
+    Route::get('/accounts', [AccountController::class, 'index']); // Get all accounts
+    Route::post('/accounts', [AccountController::class, 'store']); // Create a new account
+    Route::get('/accounts/{account}', [AccountController::class, 'show']); // Get a specific account by ID
+    Route::put('/accounts/{account}', [AccountController::class, 'update']); // Update a specific account
+    Route::delete('/accounts/{account}', [AccountController::class, 'destroy']); // Delete a specific account
+
+    Route::get('/account', [AccountController::class, 'showUserAccount']); // Get the logged-in user's account
 });
+
 
 // Loan Type Routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/loan-types', [LoanTypeController::class, 'index']);
-    Route::post('/loan-types', [LoanTypeController::class, 'store']);
-    Route::get('/loan-types/{loanType}', [LoanTypeController::class, 'show']);
-    Route::put('/loan-types/{loanType}', [LoanTypeController::class, 'update']);
-    Route::delete('/loan-types/{loanType}', [LoanTypeController::class, 'destroy']);
+    Route::get('/loan-types', [LoanTypeController::class, 'index']);         // View all loan types
+    Route::post('/loan-types', [LoanTypeController::class, 'store']);        // Create a new loan type
+    Route::get('/loan-types/{loanType}', [LoanTypeController::class, 'show']); // View a specific loan type
+    Route::put('/loan-types/{loanType}', [LoanTypeController::class, 'update']); // Update a specific loan type
+    Route::delete('/loan-types/{loanType}', [LoanTypeController::class, 'destroy']); // Delete a loan type
 });
 
 // Loan Routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/loans', [LoanController::class, 'index']);
-    Route::post('/loans', [LoanController::class, 'store']);
-    Route::get('/loans/{loan}', [LoanController::class, 'show']);
-    Route::put('/loans/{loan}', [LoanController::class, 'update']);
-    Route::delete('/loans/{loan}', [LoanController::class, 'destroy']);
+    Route::get('/loans', [LoanController::class, 'index']);           // View all loans or user-specific loans
+    Route::post('/loans', [LoanController::class, 'store']);          // Request a new loan
+    Route::get('/loans/{loan}', [LoanController::class, 'show']);     // View a specific loan
+    Route::put('/loans/{loan}', [LoanController::class, 'update']);   // Update a loan's details
+    Route::delete('/loans/{loan}', [LoanController::class, 'destroy']); // Delete a loan
 });
+
 
 // Token Routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -71,11 +75,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Transaction Routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/transactions', [TransactionController::class, 'index']);
-    Route::post('/transactions', [TransactionController::class, 'store']);
-    Route::get('/transactions/{transaction}', [TransactionController::class, 'show']);
-    Route::delete('/transactions/{transaction}', [TransactionController::class, 'destroy']);
+    Route::get('/transactions', [TransactionController::class, 'index']); // List all transactions (admin-only)
+    Route::post('/transactions', [TransactionController::class, 'store']); // Add a new transaction (admin-only)
+    Route::get('/transactions/{transaction}', [TransactionController::class, 'show']); // View a specific transaction
+    Route::get('/account/{account}/transactions', [TransactionController::class, 'accountTransactions']); // View all transactions for a specific account
 });
+
 
 // Repayment Routes
 Route::middleware('auth:sanctum')->group(function () {

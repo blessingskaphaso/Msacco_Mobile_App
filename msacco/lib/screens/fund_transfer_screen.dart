@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class TransferFundsScreen extends StatefulWidget {
-  const TransferFundsScreen({super.key});
+  const TransferFundsScreen({Key? key}) : super(key: key);
 
   @override
   _TransferFundsScreenState createState() => _TransferFundsScreenState();

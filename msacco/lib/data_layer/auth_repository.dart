@@ -24,16 +24,21 @@ class AuthRepository {
         'password_confirmation': password,
       });
 
-      final data = jsonDecode(response.body);
-      if (response.statusCode == 201) {
-        logger.i('Registration successful: ${data['message']}');
-        return null; // No error
+      if (response != null) {
+        final data = jsonDecode(response.body);
+        if (response.statusCode == 201) {
+          logger.i('Registration successful: ${data['message']}');
+          return null; // No error
+        } else {
+          final errors = data['errors'] ?? data['message'];
+          logger.w('Registration failed: $errors');
+          return errors is Map ? errors.values.join(', ') : errors;
+        }
       } else {
-        final errors = data['errors'] ?? data['message'];
-        logger.w('Registration failed: $errors');
-        return errors is Map ? errors.values.join(', ') : errors;
+        logger.e('No response received from the server.');
+        return 'Server did not respond. Please try again later.';
       }
-        } catch (e) {
+    } catch (e) {
       logger.e('Error during registration: $e');
       return 'An unexpected error occurred. Please try again.';
     }
@@ -46,16 +51,21 @@ class AuthRepository {
       {'email': email, 'password': password},
     );
 
-    final data = jsonDecode(response.body);
-    if (response.statusCode == 200) {
-      logger.i('Login successful: ${data['message']}');
-      await _cacheManager.saveToken(data['token']);
-      return UserModel.fromJson(data['user']);
+    if (response != null) {
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        logger.i('Login successful: ${data['message']}');
+        await _cacheManager.saveToken(data['token']);
+        return UserModel.fromJson(data['user']);
+      } else {
+        logger.w('Login failed: ${data['message']}');
+        return null;
+      }
     } else {
-      logger.w('Login failed: ${data['message']}');
+      logger.e('No response received from the server.');
       return null;
     }
-    }
+  }
 
   // Method to fetch user details
   Future<UserModel?> fetchUserDetails() async {
@@ -67,15 +77,20 @@ class AuthRepository {
 
     final response = await _apiService.getRequest('user/profile', token);
 
-    final data = jsonDecode(response.body);
-    if (response.statusCode == 200) {
-      logger.i('User details fetched successfully');
-      return UserModel.fromJson(data);
+    if (response != null) {
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        logger.i('User details fetched successfully');
+        return UserModel.fromJson(data);
+      } else {
+        logger.w('Failed to fetch user details: ${data['message']}');
+        return null;
+      }
     } else {
-      logger.w('Failed to fetch user details: ${data['message']}');
+      logger.e('No response received from the server.');
       return null;
     }
-    }
+  }
 
   // Method to clear token
   Future<void> clearToken() async {

@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 class ViewBalancesScreen extends StatelessWidget {
   final double shares = 120000.0; // Placeholder for shares balance
   final double deposits = 50000.0; // Placeholder for deposits balance
-  final double loan = 20000.0;
-
-  const ViewBalancesScreen({super.key}); // Placeholder for loan balance
+  final double loan = 20000.0; // Placeholder for loan balance
 
   @override
   Widget build(BuildContext context) {

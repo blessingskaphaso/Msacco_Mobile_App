@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:msacco/screens/live_chat_screen.dart'; // Import Live Chat Screen
 
 class SupportScreen extends StatelessWidget {
-  const SupportScreen({super.key});
+  const SupportScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

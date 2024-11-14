@@ -16,11 +16,13 @@ return new class extends Migration
             $table->foreignId('account_id')->constrained('accounts')->onDelete('cascade');
             $table->enum('type', ['deposit', 'withdrawal', 'loan_repayment']);
             $table->decimal('amount', 15, 2);
-            $table->timestamp('transaction_date');
-            $table->enum('status', ['pending', 'completed', 'failed']);
+            $table->timestamp('transaction_date')->useCurrent();
+            $table->string('source'); // Source of the transaction
+            $table->string('destination'); // Destination of the transaction
             $table->timestamps();
             $table->softDeletes();
         });
+
     }
 
 

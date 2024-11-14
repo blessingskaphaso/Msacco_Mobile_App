@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // For formatting date and time
 
 class LiveChatScreen extends StatefulWidget {
-  const LiveChatScreen({super.key});
+  const LiveChatScreen({Key? key}) : super(key: key);
 
   @override
   _LiveChatScreenState createState() => _LiveChatScreenState();
