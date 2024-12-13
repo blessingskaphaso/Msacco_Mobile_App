@@ -1,132 +1,146 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:msacco/config/config.dart';
+import 'package:msacco/utils/logger.dart';
+import 'package:msacco/widgets/message_component.dart';
+import 'package:http/http.dart' as http;
 
 class TransferFundsScreen extends StatefulWidget {
-  const TransferFundsScreen({Key? key}) : super(key: key);
+  const TransferFundsScreen({super.key});
 
   @override
-  _TransferFundsScreenState createState() => _TransferFundsScreenState();
+  State<TransferFundsScreen> createState() => _TransferFundsScreenState();
 }
 
 class _TransferFundsScreenState extends State<TransferFundsScreen> {
-  String? _selectedSource; // Source of funds
-  String? _selectedDestination; // Destination of funds
+  String? _selectedType;
+  String? _selectedSource;
+  String? _selectedDestination;
   final TextEditingController _amountController = TextEditingController();
 
-  final List<String> _sources = [
-    "Deposits",
-    "Bank",
-    "Airtel Money",
-    "TNM Mpamba"
-  ];
-
-  final List<String> _destinations = [
-    "Shares",
-    "Deposits",
-    "Airtel Money",
-    "TNM Mpamba"
-  ];
+  final List<String> _transferTypes = ["Deposit", "Shares", "Withdraw"];
+  final List<String> _paymentMethods = ["Bank", "Airtel Money", "TNM Mpamba"];
 
   @override
   Widget build(BuildContext context) {
+    void _updateDropdownValues() {
+      // Reset source and destination if the selected type is not in valid items
+      if (_selectedType != null && !_transferTypes.contains(_selectedType)) {
+        _selectedType = null;
+      }
+
+      if (_selectedSource != null &&
+          !(_selectedType == "Withdraw" && _selectedSource == "Deposit" ||
+              _paymentMethods.contains(_selectedSource))) {
+        _selectedSource = null;
+      }
+
+      if (_selectedDestination != null &&
+          !(_selectedType == "Deposit" && _selectedDestination == "Deposit" ||
+              _selectedType == "Shares" && _selectedDestination == "Shares" ||
+              _paymentMethods.contains(_selectedDestination))) {
+        _selectedDestination = null;
+      }
+    }
+
+    _updateDropdownValues();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           'Transfer Funds',
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Theme.of(context).primaryColor, // Army Green
+        backgroundColor: Theme.of(context).primaryColor,
         elevation: 0,
       ),
       body: SingleChildScrollView(
-        // Wrap the content with SingleChildScrollView
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Source of Funds",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+            _buildHeader(context, "Type of Transfer"),
             const SizedBox(height: 10),
-
-            // Dropdown for selecting source of funds
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: "Select Source",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              value: _selectedSource,
-              items: _sources.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (value) {
+            _buildDropdownField(
+              context,
+              "Select Transfer Type",
+              _selectedType,
+              _transferTypes,
+              Icons.swap_horiz,
+              (value) {
                 setState(() {
-                  _selectedSource = value;
-                  // Reset destination if source changes
-                  _selectedDestination = null;
+                  _selectedType = value;
+                  if (value == "Deposit") {
+                    _selectedDestination = "Deposit";
+                    _selectedSource = null;
+                  } else if (value == "Shares") {
+                    _selectedDestination = "Shares";
+                    _selectedSource = null;
+                  } else if (value == "Withdraw") {
+                    _selectedSource = "Deposit";
+                    _selectedDestination = null;
+                  }
                 });
               },
             ),
             const SizedBox(height: 20),
-
-            const Text(
-              "Destination of Funds",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+            _buildHeader(context, "Source"),
             const SizedBox(height: 10),
-
-            // Dropdown for selecting destination of funds
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: "Select Destination",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              value: _selectedDestination,
-              items: _filteredDestinations().map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (value) {
+            _buildDropdownField(
+              context,
+              "Select Source",
+              _selectedSource,
+              _selectedType == "Withdraw" ? ["Deposit"] : _paymentMethods,
+              Icons.account_balance_wallet,
+              (value) {
+                setState(() {
+                  _selectedSource = value;
+                });
+              },
+            ),
+            const SizedBox(height: 20),
+            _buildHeader(context, "Destination"),
+            const SizedBox(height: 10),
+            _buildDropdownField(
+              context,
+              "Select Destination",
+              _selectedDestination,
+              _selectedType == "Deposit"
+                  ? ["Deposit"]
+                  : _selectedType == "Shares"
+                      ? ["Shares"]
+                      : _paymentMethods,
+              Icons.account_balance_wallet,
+              (value) {
                 setState(() {
                   _selectedDestination = value;
                 });
               },
             ),
             const SizedBox(height: 20),
-
-            // Amount to transfer input field
-            TextField(
-              controller: _amountController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: "Amount (MWK)",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
+            _buildHeader(context, "Amount"),
+            const SizedBox(height: 10),
+            _buildTextField(
+              context,
+              "Amount (MWK)",
+              _amountController,
+              Icons.attach_money,
+              TextInputType.number,
             ),
             const SizedBox(height: 30),
-
-            // Submit button for the transfer
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // Perform transfer logic
+                  logger.i("Submit transfer button clicked.");
                   _performTransfer();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).primaryColor,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 16, horizontal: 40),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 40,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
@@ -143,93 +157,143 @@ class _TransferFundsScreenState extends State<TransferFundsScreen> {
     );
   }
 
-  // Filters the destination based on the selected source
-  List<String> _filteredDestinations() {
-    if (_selectedSource == "Bank" ||
-        _selectedSource == "Airtel Money" ||
-        _selectedSource == "TNM Mpamba") {
-      // If the source is from Bank or Mobile Money, allow only "Shares" or "Deposits" as destination
-      return _destinations.where((dest) => dest != "Bank").toList();
-    } else {
-      // Otherwise, show all available destinations
-      return _destinations;
-    }
+  Widget _buildHeader(BuildContext context, String text) {
+    return Text(
+      text,
+      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    );
   }
 
-  // Logic to handle the transfer (placeholder)
-  void _performTransfer() {
+  Widget _buildDropdownField(
+    BuildContext context,
+    String label,
+    String? selectedValue,
+    List<String> items,
+    IconData icon,
+    ValueChanged<String?> onChanged,
+  ) {
+    return Card(
+      elevation: 3,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: DropdownButtonFormField<String>(
+          decoration: InputDecoration(
+            labelText: label,
+            icon: Icon(icon, color: Theme.of(context).primaryColor),
+            border: InputBorder.none,
+          ),
+          value: selectedValue,
+          items: items.map((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value),
+            );
+          }).toList(),
+          onChanged: onChanged,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(
+    BuildContext context,
+    String label,
+    TextEditingController controller,
+    IconData icon,
+    TextInputType keyboardType,
+  ) {
+    return Card(
+      elevation: 3,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          decoration: InputDecoration(
+            labelText: label,
+            icon: Icon(icon, color: Theme.of(context).primaryColor),
+            border: InputBorder.none,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _performTransfer() async {
     final amount = _amountController.text;
+    final type = _selectedType?.toLowerCase();
     final source = _selectedSource;
     final destination = _selectedDestination;
+    final accountId = AppConfig.userId;
+    final token = AppConfig.userToken;
 
-    if (source != null && destination != null && amount.isNotEmpty) {
-      if (_isValidTransfer(source, destination)) {
-        // Success transfer logic
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text("Transfer Successful"),
-              content: Text(
-                  "You have successfully transferred MWK $amount from $source to $destination."),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close dialog
-                  },
-                  child: const Text("OK"),
-                ),
-              ],
-            );
-          },
-        );
+    logger.i("Performing transfer...");
+    logger.i(
+        "Transfer details: type=$type, source=$source, amount=$amount, accountId=$accountId");
+
+    // Validation checks
+    if (type == null ||
+        source == null ||
+        destination == null ||
+        amount.isEmpty) {
+      _showMessageDialog(
+          "Please fill out all fields.", false, MessageType.warning);
+      return;
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse('${AppConfig.apiBaseUrl}/transactions'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'account_id': accountId,
+          'type': type,
+          'amount': int.parse(amount),
+          'source': source,
+          'destination': destination,
+        }),
+      );
+
+      logger.i("API response: ${response.statusCode}");
+      // logger.i("Response body: ${response.body}");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseData = jsonDecode(response.body);
+        final transaction = responseData['transaction'];
+        final successMessage = "Transfer completed successfully!\n\n"
+            "Amount: MWK ${transaction['amount']}\n"
+            "Type: ${transaction['type']}\n"
+            "From: ${transaction['source']}\n"
+            "To: ${transaction['destination']}";
+
+        _showMessageDialog(successMessage, true, MessageType.success);
       } else {
-        _showErrorDialog("Invalid Transfer",
-            "You cannot transfer between the same types or between Bank, Airtel Money, and TNM Mpamba.");
+        final errorData = jsonDecode(response.body);
+        _showMessageDialog(
+            errorData['message'] ?? "Failed to complete transfer.",
+            false,
+            MessageType.error);
       }
-    } else {
-      _showErrorDialog("Incomplete Form", "Please fill out all fields.");
+    } catch (e) {
+      logger.e("An error occurred during the transfer", error: e);
+      _showMessageDialog(
+          "An error occurred during the transfer.", false, MessageType.error);
     }
   }
 
-  // Validates the transfer to ensure no invalid transfers between the same types
-  bool _isValidTransfer(String source, String destination) {
-    // Prevent transfers between the same types
-    if (source == destination) {
-      return false; // Same type transfers should not be allowed
-    }
-
-    // Prevent transfers between Bank, Airtel Money, and TNM Mpamba
-    if ((source == "Bank" ||
-            source == "Airtel Money" ||
-            source == "TNM Mpamba") &&
-        (destination == "Bank" ||
-            destination == "Airtel Money" ||
-            destination == "TNM Mpamba")) {
-      return false;
-    }
-
-    return true;
-  }
-
-  // Displays error dialog
-  void _showErrorDialog(String title, String message) {
+  void _showMessageDialog(String message, bool success, MessageType type) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close dialog
-              },
-              child: const Text("OK"),
-            ),
-          ],
+      builder: (context) {
+        return SweetAlertStyleDialog(
+          message: message,
+          type: type,
         );
       },
     );
+    logger.i("Message dialog displayed: $message");
   }
 }

@@ -43,12 +43,7 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
-        $admin = Auth::user();
-
-        if (!$admin->isAdmin()) {
-            return response()->json(['message' => 'Only admins can create transactions.'], 403);
-        }
-
+        // Validate the incoming request data
         $request->validate([
             'account_id' => 'required|exists:accounts,id',
             'type' => 'required|in:deposit,withdrawal,loan_repayment',
@@ -57,23 +52,31 @@ class TransactionController extends Controller
             'destination' => 'required|string|max:255',
         ]);
 
+        // Check if the account exists
         $account = Account::find($request->account_id);
+        if (!$account) {
+            return response()->json(['message' => 'Account does not exist.'], 404);
+        }
 
+        // Check if the user is associated with the account or is an admin
+        $user = Auth::user();
+        if ($user->id !== $account->user_id && !$user->isAdmin()) {
+            return response()->json(['message' => 'Unauthorized to create transactions for this account.'], 403);
+        }
+
+        // Handle insufficient funds for withdrawals
         if ($request->type === 'withdrawal' && $account->deposit_balance < $request->amount) {
             return response()->json(['message' => 'Insufficient funds for withdrawal.'], 403);
         }
 
-        // Adjust balance based on transaction type
+        // Adjust the account balance based on the transaction type
         if ($request->type === 'deposit') {
             $account->increment('deposit_balance', $request->amount);
-        } elseif ($request->type === 'withdrawal') {
-            $account->decrement('deposit_balance', $request->amount);
-        } elseif ($request->type === 'loan_repayment') {
-            // Assuming loan repayments also decrease the deposit balance
+        } elseif ($request->type === 'withdrawal' || $request->type === 'loan_repayment') {
             $account->decrement('deposit_balance', $request->amount);
         }
 
-        // Record the transaction
+        // Create the transaction
         $transaction = Transaction::create([
             'account_id' => $request->account_id,
             'type' => $request->type,
@@ -83,8 +86,12 @@ class TransactionController extends Controller
             'transaction_date' => now(),
         ]);
 
-        return response()->json($transaction, 201);
+        return response()->json([
+            'message' => 'Transaction created successfully.',
+            'transaction' => $transaction,
+        ], 201);
     }
+
 
     /**
      * Display a specific transaction.

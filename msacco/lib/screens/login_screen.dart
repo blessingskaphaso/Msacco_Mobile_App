@@ -68,13 +68,17 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      await authProvider.login(email, password);
+      final loginResponse = await authProvider.login(email, password);
+      logger.d('Login Response: $loginResponse'); // Debug the full response
 
       Navigator.of(context, rootNavigator: true).pop();
 
       if (authProvider.currentUser != null) {
         AppConfig.userId = authProvider.currentUser!.id;
         AppConfig.userName = authProvider.currentUser!.name;
+        AppConfig.userToken =
+            loginResponse?['token']; // Get token directly from response
+        logger.d('Auth Token received: ${loginResponse?['token']}');
 
         showMessageDialog(
           context,

@@ -62,6 +62,7 @@ class AccountController extends Controller
         }
 
         $account = Account::create([
+            'id' => $request->user_id, // Ensure ID matches the user ID
             'user_id' => $request->user_id,
             'share_balance' => $request->share_balance ?? 0,
             'deposit_balance' => $request->deposit_balance ?? 0,
@@ -69,6 +70,7 @@ class AccountController extends Controller
 
         return response()->json($account, 201);
     }
+
 
     /**
      * Display a specific account by ID.

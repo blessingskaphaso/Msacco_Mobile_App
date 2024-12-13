@@ -1,5 +1,5 @@
 class UserModel {
-  final int id;
+  final int? id; // Make id nullable to handle cases where it might be null
   final String name;
   final String email;
 
@@ -11,10 +11,14 @@ class UserModel {
 
   // Factory method for creating a UserModel from JSON data
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    if (json['id'] == null || json['name'] == null || json['email'] == null) {
+      throw FormatException("Invalid JSON format for UserModel");
+    }
+
     return UserModel(
-      id: json['id'],
-      name: json['name'],
-      email: json['email'],
+      id: json['id'] as int?, // Allow id to be nullable
+      name: json['name'] as String,
+      email: json['email'] as String,
     );
   }
 

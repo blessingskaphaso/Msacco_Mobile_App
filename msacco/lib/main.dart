@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:msacco/screens/dashboard_screen.dart';
 import 'package:provider/provider.dart';
 import 'screens/splash_screen.dart';
 import 'providers/theme_provider.dart';
@@ -9,6 +8,7 @@ import 'config.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppConfig.init();
+  debugPrint('App initialized with token: ${AppConfig.token}');
 
   // Wrap the app with MultiProvider instead of single ChangeNotifierProvider
   runApp(

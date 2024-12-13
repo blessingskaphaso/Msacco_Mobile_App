@@ -10,7 +10,7 @@ class Account extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['user_id', 'account_number', 'share_balance', 'deposit_balance'];
+    protected $fillable = ['id', 'user_id', 'account_number', 'share_balance', 'deposit_balance'];
 
     /**
      * Boot method to automatically generate the account number.

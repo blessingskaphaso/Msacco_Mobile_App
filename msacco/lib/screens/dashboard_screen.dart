@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:msacco/config/config.dart';
+import 'package:msacco/utils/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:msacco/providers/auth_provider.dart';
 import 'package:msacco/widgets/loading_widget.dart';
@@ -26,6 +28,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     _fetchUserDetails();
+  }
+
+  Future<void> testSetValues() async {
+    await AppConfig.setUserId(123);
+    await AppConfig.setUserName('Test User');
+    await AppConfig.setToken('test_token_123');
+
+    debugPrint('Testing set values...');
+    debugPrint('userId: ${AppConfig.userId}');
+    debugPrint('userName: ${AppConfig.userName}');
+    debugPrint('token: ${AppConfig.userToken}');
   }
 
   Future<void> _fetchUserDetails() async {
@@ -236,6 +249,98 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ],
             ),
           ],
+        ),
+      ),
+
+      //Floating Reflesh Bar
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 16.0, right: 16.0),
+        child: FloatingActionButton(
+          onPressed: () async {
+            logger
+                .i("Refresh button pressed. Fetching updated user details...");
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return const LoadingWidget();
+              },
+            );
+
+            try {
+              // Fetch updated user details
+              final authProvider =
+                  Provider.of<AuthProvider>(context, listen: false);
+              await authProvider.fetchUserDetails();
+
+              if (authProvider.currentUser != null) {
+                // Log and update cache
+                logger.i("Fetched user details successfully:");
+                logger.i("User ID: ${authProvider.currentUser!.id}");
+                logger.i("User Name: ${authProvider.currentUser!.name}");
+
+                await AppConfig.setUserName(authProvider.currentUser!.name);
+
+                // Hide loading widget and show success dialog
+                Navigator.of(context, rootNavigator: true).pop();
+                logger.i("User details updated in cache successfully.");
+
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text("Refreshed"),
+                    content: const Text("User details have been updated."),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text("OK"),
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                // Hide loading widget and show error dialog if user not found
+                Navigator.of(context, rootNavigator: true).pop();
+                logger.w("Failed to fetch user details. Current user is null.");
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text("Error"),
+                    content: const Text("Failed to fetch user details."),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text("OK"),
+                      ),
+                    ],
+                  ),
+                );
+              }
+            } catch (e, stackTrace) {
+              // Hide loading widget and show error dialog if an exception occurs
+              Navigator.of(context, rootNavigator: true).pop();
+              logger.e("An error occurred while refreshing user details.",
+                  error: e, stackTrace: stackTrace);
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text("Error"),
+                  content: Text("An error occurred: $e"),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text("OK"),
+                    ),
+                  ],
+                ),
+              );
+            }
+          },
+          backgroundColor: Theme.of(context).primaryColor,
+          child: const Icon(
+            Icons.refresh,
+            color: Colors.white, // Explicitly set icon color to white
+          ),
         ),
       ),
     );

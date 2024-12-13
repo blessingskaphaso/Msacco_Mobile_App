@@ -45,7 +45,7 @@ class AuthRepository {
   }
 
   // Method for logging in the user
-  Future<UserModel?> login(String email, String password) async {
+  Future<Map<String, dynamic>?> login(String email, String password) async {
     final response = await _apiService.postRequest(
       'login',
       {'email': email, 'password': password},
@@ -56,7 +56,7 @@ class AuthRepository {
       if (response.statusCode == 200) {
         logger.i('Login successful: ${data['message']}');
         await _cacheManager.saveToken(data['token']);
-        return UserModel.fromJson(data['user']);
+        return {'user': data['user'], 'token': data['token']};
       } else {
         logger.w('Login failed: ${data['message']}');
         return null;
@@ -75,13 +75,18 @@ class AuthRepository {
       return null;
     }
 
-    final response = await _apiService.getRequest('user/profile', token);
+    logger.i('Using token: $token'); // Log the token being used
+    final response = await _apiService.getRequest('user', token);
 
     if (response != null) {
+      // Log the raw response for debugging
+      logger.i('Full Response: ${response.body}');
+
       final data = jsonDecode(response.body);
+      logger.i('Full Response: ${response.body}');
       if (response.statusCode == 200) {
-        logger.i('User details fetched successfully');
-        return UserModel.fromJson(data);
+        logger.i('User data: ${data['user']}');
+        return UserModel.fromJson(data['user']);
       } else {
         logger.w('Failed to fetch user details: ${data['message']}');
         return null;
