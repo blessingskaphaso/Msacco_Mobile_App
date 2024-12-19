@@ -8,6 +8,8 @@ import 'package:msacco/screens/signup_screen.dart'; // Import Signup Screen
 import 'package:msacco/widgets/loading_widget.dart';
 import 'package:msacco/widgets/message_widget.dart';
 import 'package:local_auth/local_auth.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -21,6 +23,30 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final LocalAuthentication auth = LocalAuthentication();
   bool _obscurePassword = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _clearCache();
+  }
+
+  Future<void> _clearCache() async {
+    try {
+      logger.i('Clearing app cache and user data...');
+
+      // Clear all config variables except theme
+      await AppConfig.clear();
+
+      logger.i('Cache cleared successfully');
+      logger.d('User Token: ${AppConfig.userToken}');
+      logger.d('User ID: ${AppConfig.userId}');
+      logger.d('Account Number: ${AppConfig.accountNumber}');
+      logger.d('Has Account: ${AppConfig.hasAccount}');
+      logger.d('Theme Mode: ${AppConfig.isDarkMode}');
+    } catch (e, stackTrace) {
+      logger.e('Error clearing cache', error: e, stackTrace: stackTrace);
+    }
+  }
 
   Future<void> _authenticateWithBiometrics() async {
     try {
@@ -44,6 +70,47 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _fetchAccountDetails() async {
+    try {
+      logger.i('Fetching account details...');
+
+      final response = await http.get(
+        Uri.parse('${AppConfig.apiBaseUrl}/account'),
+        headers: {
+          'Authorization': 'Bearer ${AppConfig.userToken}',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      logger.d('Account API Response Status: ${response.statusCode}');
+      logger.d('Account API Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final accountData = json.decode(response.body);
+        logger.i('Account found: ${accountData['account_number']}, '
+            'Shares: ${accountData['share_balance']}, '
+            'Deposits: ${accountData['deposit_balance']}');
+        await AppConfig.setAccountDetails(
+          hasAcc: true,
+          accNumber: accountData['account_number'],
+          shareBal: accountData['share_balance'],
+          depositBal: accountData['deposit_balance'],
+        );
+      } else if (response.statusCode == 404) {
+        logger.w('No account found for user');
+        await AppConfig.setAccountDetails(hasAcc: false);
+      } else {
+        logger.e(
+            'Failed to load account details. Status: ${response.statusCode}');
+        throw Exception('Failed to load account details');
+      }
+    } catch (e, stackTrace) {
+      logger.e('Error fetching account details',
+          error: e, stackTrace: stackTrace);
+      await AppConfig.setAccountDetails(hasAcc: false);
+    }
+  }
+
   Future<void> _login() async {
     try {
       final email = _emailController.text;
@@ -53,8 +120,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (email.isEmpty || password.isEmpty) {
         logger.w('Login attempted with empty credentials');
-        showMessageDialog(
-            context, 'Please enter both email and password.', false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.warning_amber_rounded, color: Colors.white),
+                SizedBox(width: 10),
+                Text('Please enter both email and password'),
+              ],
+            ),
+            backgroundColor: Colors.orange,
+            duration: Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
         return;
       }
 
@@ -69,30 +148,56 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final loginResponse = await authProvider.login(email, password);
-      logger.d('Login Response: $loginResponse'); // Debug the full response
+      logger.d('Login Response: $loginResponse');
 
-      Navigator.of(context, rootNavigator: true).pop();
+      Navigator.of(context, rootNavigator: true)
+          .pop(); // Dismiss loading widget
 
       if (authProvider.currentUser != null) {
         AppConfig.userId = authProvider.currentUser!.id;
         AppConfig.userName = authProvider.currentUser!.name;
-        AppConfig.userToken =
-            loginResponse?['token']; // Get token directly from response
+        AppConfig.userToken = loginResponse?['token'];
         logger.d('Auth Token received: ${loginResponse?['token']}');
 
-        showMessageDialog(
-          context,
-          'Login successful!',
-          true,
-          onConfirm: () {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const DashboardScreen()),
-            );
-          },
+        // Fetch account details after successful login
+        await _fetchAccountDetails();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white),
+                SizedBox(width: 10),
+                Text('Login successful!'),
+              ],
+            ),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+          ),
         );
+
+        // Navigate after a brief delay to show the success message
+        Future.delayed(const Duration(milliseconds: 500), () {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const DashboardScreen()),
+          );
+        });
       } else {
-        showMessageDialog(
-            context, 'Login failed. Please check your credentials.', false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.error_outline, color: Colors.white),
+                SizedBox(width: 10),
+                Text('Login failed. Please check your credentials.'),
+              ],
+            ),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
     } catch (e, stackTrace) {
       logger.e('Login error occurred', error: e, stackTrace: stackTrace);

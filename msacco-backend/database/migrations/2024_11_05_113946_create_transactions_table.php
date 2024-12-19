@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('account_id')->constrained('accounts')->onDelete('cascade');
-            $table->enum('type', ['deposit', 'withdrawal', 'loan_repayment']);
+            $table->enum('type', ['deposit', 'withdraw', 'shares', 'loan repayment']);
             $table->decimal('amount', 15, 2);
             $table->timestamp('transaction_date')->useCurrent();
             $table->string('source'); // Source of the transaction

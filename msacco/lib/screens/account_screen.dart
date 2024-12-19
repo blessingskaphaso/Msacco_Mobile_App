@@ -5,6 +5,8 @@ import 'package:msacco/config/config.dart';
 import 'package:msacco/screens/login_screen.dart';
 import 'package:msacco/utils/logger.dart'; // Assuming you have a logger utility
 import 'package:msacco/widgets/message_component.dart';
+import 'package:provider/provider.dart';
+import 'package:msacco/providers/auth_provider.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({Key? key}) : super(key: key);
@@ -82,53 +84,124 @@ class _AccountScreenState extends State<AccountScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundImage:
-                          const AssetImage('assets/images/profile_picture.png'),
+                  // Profile Header
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Column(
+                      children: [
+                        CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Colors.white,
+                          child: Icon(
+                            Icons.person,
+                            size: 50,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        Text(
+                          userDetails!['name'],
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          userDetails!['email'],
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  Center(
-                    child: Text(
-                      userDetails!['name'], // Dynamic full name
-                      style: const TextStyle(
-                          fontSize: 22, fontWeight: FontWeight.bold),
+                  const SizedBox(height: 25),
+
+                  // Account Details Section
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Account Details",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        _buildDetailItem(
+                          context,
+                          Icons.person_outline,
+                          "Full Name",
+                          userDetails!['name'],
+                        ),
+                        _buildDetailItem(
+                          context,
+                          Icons.email_outlined,
+                          "Email",
+                          userDetails!['email'],
+                        ),
+                        _buildDetailItem(
+                          context,
+                          Icons.phone_outlined,
+                          "Phone",
+                          userDetails!['phone_number'] ?? "Not Provided",
+                        ),
+                        _buildDetailItem(
+                          context,
+                          Icons.account_balance_outlined,
+                          "Account Status",
+                          AppConfig.hasAccount
+                              ? "Active Account (${AppConfig.accountNumber ?? 'N/A'})"
+                              : "No Account",
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 30),
-                  const Text(
-                    "Account Details",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 20),
-                  _buildAccountDetailTile(
-                      context, Icons.person, "Full Name", userDetails!['name']),
-                  const Divider(),
-                  _buildAccountDetailTile(
-                      context, Icons.email, "Email", userDetails!['email']),
-                  const Divider(),
-                  _buildAccountDetailTile(context, Icons.phone, "Phone Number",
-                      userDetails!['phone_number'] ?? "Not Provided"),
-                  const Divider(),
-                  const SizedBox(height: 30),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _logout(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 16, horizontal: 80),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
+
+                  // Logout Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () => _logout(context),
+                      icon: const Icon(Icons.logout, color: Colors.white),
+                      label: const Text(
+                        'Log out',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      child: const Text(
-                        'Log out',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
                   ),
@@ -138,26 +211,50 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  Widget _buildAccountDetailTile(
-      BuildContext context, IconData icon, String title, String subtitle) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.green),
-      title: Text(
-        title,
-        style: TextStyle(
-          color: Theme.of(context).brightness == Brightness.dark
-              ? Colors.white
-              : Colors.black,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: TextStyle(
-          color: Theme.of(context).brightness == Brightness.dark
-              ? Colors.grey[300]
-              : Colors.grey[700],
-        ),
+  Widget _buildDetailItem(
+      BuildContext context, IconData icon, String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              icon,
+              color: Theme.of(context).primaryColor,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[400]
+                        : Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -274,20 +371,52 @@ class _AccountScreenState extends State<AccountScreen> {
           content: const Text("Are you sure you want to log out?"),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.of(context).pop(),
               child: const Text("Cancel"),
             ),
             ElevatedButton(
-              onPressed: () {
-                AppConfig.clear(); // Clear preferences
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  (route) => false,
-                );
+              onPressed: () async {
+                // Close confirmation dialog first
+                Navigator.of(context).pop();
+
+                try {
+                  // Hit the logout endpoint without waiting for response
+                  http.post(
+                    Uri.parse('${AppConfig.apiBaseUrl}/logout'),
+                    headers: {
+                      'Authorization': 'Bearer ${AppConfig.userToken}',
+                      'Accept': 'application/json',
+                    },
+                  );
+
+                  // Clear local storage
+                  final authProvider =
+                      Provider.of<AuthProvider>(context, listen: false);
+                  await authProvider.logout();
+
+                  // Navigate to login screen immediately
+                  if (context.mounted) {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      (route) => false,
+                    );
+                  }
+                } catch (e) {
+                  print('Error during logout: $e');
+                  // Still proceed with navigation on error
+                  if (context.mounted) {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      (route) => false,
+                    );
+                  }
+                }
               },
-              child: const Text("Log out"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+              child:
+                  const Text("Log out", style: TextStyle(color: Colors.white)),
             ),
           ],
         );

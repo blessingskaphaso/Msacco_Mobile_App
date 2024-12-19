@@ -51,26 +51,26 @@ class _ViewBalancesScreenState extends State<ViewBalancesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'View Balances',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('View Balances',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: Theme.of(context).primaryColor,
         elevation: 0,
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Padding(
+          : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  // Header
+                  Text(
                     'Your Balances',
                     style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).primaryColor,
+                    ),
                   ),
                   const SizedBox(height: 20),
 
@@ -79,8 +79,9 @@ class _ViewBalancesScreenState extends State<ViewBalancesScreen> {
                     context,
                     'Shares Balance',
                     'MWK ${shares.toStringAsFixed(2)}',
-                    Icons.account_balance_wallet,
-                    Colors.green,
+                    Icons.savings_outlined,
+                    Colors.greenAccent,
+                    'Your investment in the SACCO',
                   ),
 
                   // Deposits Balance Card
@@ -88,42 +89,65 @@ class _ViewBalancesScreenState extends State<ViewBalancesScreen> {
                     context,
                     'Deposits Balance',
                     'MWK ${deposits.toStringAsFixed(2)}',
-                    Icons.savings,
-                    Colors.blue,
+                    Icons.account_balance_wallet_outlined,
+                    Colors.orangeAccent,
+                    'Your savings in the SACCO',
                   ),
 
                   const SizedBox(height: 20),
-                  const Divider(),
-                  const SizedBox(height: 10),
 
-                  // Summary of Holdings
-                  const Text(
-                    'Summary',
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Total Holdings (Shares + Deposits): MWK ${totalHoldings.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : Theme.of(context).primaryColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                  // Summary Section
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Theme.of(context).primaryColor,
+                          Theme.of(context).primaryColor.withOpacity(0.8),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Available for Loan: MWK ${availableForLoan.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : Theme.of(context).primaryColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Row(
+                          children: [
+                            Icon(Icons.analytics_outlined,
+                                color: Colors.white, size: 24),
+                            SizedBox(width: 10),
+                            Text(
+                              'Summary',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        _buildSummaryItem(
+                          'Total Holdings',
+                          'MWK ${totalHoldings.toStringAsFixed(2)}',
+                          Icons.account_balance_outlined,
+                        ),
+                        const Divider(color: Colors.white24, height: 30),
+                        _buildSummaryItem(
+                          'Available for Loan',
+                          'MWK ${availableForLoan.toStringAsFixed(2)}',
+                          Icons.monetization_on_outlined,
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -133,29 +157,96 @@ class _ViewBalancesScreenState extends State<ViewBalancesScreen> {
   }
 
   Widget _buildBalanceCard(BuildContext context, String title, String balance,
-      IconData icon, Color iconColor) {
+      IconData icon, Color iconColor, String subtitle) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: iconColor.withOpacity(0.2),
-          child: Icon(icon, color: iconColor, size: 30),
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(
-          balance,
-          style: TextStyle(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Theme.of(context).primaryColor,
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.grey[600]
+                            : Colors.grey[300],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      balance,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Theme.of(context).primaryColor
+                            : Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: iconColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: iconColor, size: 30),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.grey[600]
+                    : Colors.grey[400],
+              ),
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSummaryItem(String label, String value, IconData icon) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: Colors.white70, size: 20),
+            const SizedBox(width: 10),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+        Text(
+          value,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 }

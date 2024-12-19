@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('loans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('account_id')->constrained('accounts')->onDelete('cascade'); // Added account_id column
             $table->foreignId('loan_type_id')->constrained('loan_types');
             $table->decimal('loan_amount', 15, 2);
             $table->integer('repayment_period');
@@ -23,7 +24,6 @@ return new class extends Migration
             $table->softDeletes();
         });
     }
-
 
     /**
      * Reverse the migrations.

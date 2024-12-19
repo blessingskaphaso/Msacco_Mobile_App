@@ -10,18 +10,27 @@ use Illuminate\Support\Facades\Auth;
 class AccountController extends Controller
 {
     /**
-     * Display a listing of all accounts.
+     * Display a listing of all accounts. (Admins Only)
      *
-     * This endpoint is accessible to all authenticated users, returning a list
-     * of all accounts in the system.
+     * Only admins can access this endpoint to view all accounts. Non-admin users
+     * will receive an unauthorized message.
      *
-     * @return \Illuminate\Http\JsonResponse JSON response containing all accounts.
+     * @return \Illuminate\Http\JsonResponse JSON response containing all accounts or an error message.
      */
     public function index()
     {
+        $user = Auth::user();
+
+        // Check if the user is an admin
+        if (!$user->isAdmin()) {
+            return response()->json(['message' => 'Only admins can access all accounts.'], 403);
+        }
+
+        // Fetch all accounts for admins
         $accounts = Account::all();
         return response()->json($accounts, 200);
     }
+
 
     /**
      * Store a new account for a specified user (Admin only).

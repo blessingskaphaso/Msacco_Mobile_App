@@ -10,11 +10,24 @@ class Loan extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['user_id', 'loan_type_id', 'loan_amount', 'repayment_period', 'interest_rate', 'status'];
+    protected $fillable = [
+        'user_id',
+        'account_id', // Add account_id to fillable properties
+        'loan_type_id',
+        'loan_amount',
+        'repayment_period',
+        'interest_rate',
+        'status',
+    ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function account()
+    {
+        return $this->belongsTo(Account::class); // Define relationship with Account model
     }
 
     public function loanType()
@@ -27,4 +40,3 @@ class Loan extends Model
         return $this->hasMany(Repayment::class);
     }
 }
-

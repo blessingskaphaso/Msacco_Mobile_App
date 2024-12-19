@@ -31,90 +31,54 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get theme settings using the ThemeProvider
-    final themeProvider = Provider.of<ThemeProvider>(context);
-
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'MSACCO App',
-      themeMode: themeProvider.themeMode,
-      theme: ThemeData(
-        brightness: Brightness.light,
-        primaryColor: armyGreen,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: armyGreen,
-          brightness: Brightness.light,
-          primary: armyGreen,
-          onPrimary: Colors.white,
-          secondary: Colors.grey[600],
-        ),
-        scaffoldBackgroundColor: Colors.white,
-        useMaterial3: true,
-        // Add elevation settings for Material 3
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: armyGreen,
-            foregroundColor: Colors.white,
-            elevation: 2,
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'MSACCO App',
+          theme: themeProvider.theme,
+          themeMode: themeProvider.themeMode,
+          darkTheme: ThemeData(
+            brightness: Brightness.dark,
+            primaryColor: armyGreen,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: armyGreen,
+              brightness: Brightness.dark,
+              primary: armyGreen,
+              onPrimary: Colors.white,
+              secondary: Colors.grey[300],
+            ),
+            scaffoldBackgroundColor: Colors.black,
+            useMaterial3: true,
+            // Add elevation settings for Material 3 in dark mode
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: armyGreen,
+                foregroundColor: Colors.white,
+                elevation: 2,
+              ),
+            ),
+            // Add input decoration theme for consistent text fields in dark mode
+            inputDecorationTheme: InputDecorationTheme(
+              filled: true,
+              fillColor: Colors.grey[800],
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30.0),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30.0),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30.0),
+                borderSide: BorderSide(color: armyGreen),
+              ),
+            ),
           ),
-        ),
-        // Add input decoration theme for consistent text fields
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Colors.grey[200],
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide(color: armyGreen),
-          ),
-        ),
-      ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        primaryColor: armyGreen,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: armyGreen,
-          brightness: Brightness.dark,
-          primary: armyGreen,
-          onPrimary: Colors.white,
-          secondary: Colors.grey[300],
-        ),
-        scaffoldBackgroundColor: Colors.black,
-        useMaterial3: true,
-        // Add elevation settings for Material 3 in dark mode
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: armyGreen,
-            foregroundColor: Colors.white,
-            elevation: 2,
-          ),
-        ),
-        // Add input decoration theme for consistent text fields in dark mode
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Colors.grey[800],
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide(color: armyGreen),
-          ),
-        ),
-      ),
-      home: const SplashScreen(),
+          home: const SplashScreen(),
+        );
+      },
     );
   }
 }

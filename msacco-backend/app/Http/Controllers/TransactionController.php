@@ -9,25 +9,35 @@ use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
-    /**
-     * Display a listing of all transactions (Admin only).
-     *
-     * Only admins can access this endpoint to view all transactions across all accounts.
-     * Regular users are restricted to viewing transactions for their own accounts only.
-     *
-     * @return \Illuminate\Http\JsonResponse JSON response containing all transactions.
-     */
-    public function index()
-    {
-        $user = Auth::user();
+/**
+ * Display a listing of transactions.
+ *
+ * Admins can view all transactions, while regular users can only view
+ * transactions for their own account.
+ *
+ * @return \Illuminate\Http\JsonResponse JSON response containing transactions.
+ */
+public function index()
+{
+    $user = Auth::user();
 
-        if (!$user->isAdmin()) {
-            return response()->json(['message' => 'Only admins can view all transactions.'], 403);
+    if ($user->isAdmin()) {
+        // Admin: Return all transactions
+        $transactions = Transaction::all();
+    } else {
+        // Regular user: Return transactions for the user's account only
+        $account = $user->account;
+
+        if (!$account) {
+            return response()->json(['message' => 'No account found for the user.'], 404);
         }
 
-        $transactions = Transaction::all();
-        return response()->json($transactions, 200);
+        $transactions = Transaction::where('account_id', $account->id)->get();
     }
+
+    return response()->json($transactions, 200);
+}
+
 
     /**
      * Store a new transaction for a specified account (Admin only).
@@ -46,7 +56,7 @@ class TransactionController extends Controller
         // Validate the incoming request data
         $request->validate([
             'account_id' => 'required|exists:accounts,id',
-            'type' => 'required|in:deposit,withdrawal,loan_repayment',
+            'type' => 'required|in:deposit,withdraw,shares,loan_repayment',
             'amount' => 'required|numeric|min:0.01',
             'source' => 'required|string|max:255',
             'destination' => 'required|string|max:255',
@@ -65,15 +75,17 @@ class TransactionController extends Controller
         }
 
         // Handle insufficient funds for withdrawals
-        if ($request->type === 'withdrawal' && $account->deposit_balance < $request->amount) {
+        if ($request->type === 'withdraw' && $account->deposit_balance < $request->amount) {
             return response()->json(['message' => 'Insufficient funds for withdrawal.'], 403);
         }
 
         // Adjust the account balance based on the transaction type
         if ($request->type === 'deposit') {
             $account->increment('deposit_balance', $request->amount);
-        } elseif ($request->type === 'withdrawal' || $request->type === 'loan_repayment') {
+        } elseif ($request->type === 'withdraw' || $request->type === 'loan_repayment') {
             $account->decrement('deposit_balance', $request->amount);
+        } elseif ($request->type === 'shares') {
+            $account->increment('share_balance', $request->amount);
         }
 
         // Create the transaction

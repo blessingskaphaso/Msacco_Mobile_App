@@ -24,195 +24,216 @@ class _TransferFundsScreenState extends State<TransferFundsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    void _updateDropdownValues() {
-      // Reset source and destination if the selected type is not in valid items
-      if (_selectedType != null && !_transferTypes.contains(_selectedType)) {
-        _selectedType = null;
-      }
-
-      if (_selectedSource != null &&
-          !(_selectedType == "Withdraw" && _selectedSource == "Deposit" ||
-              _paymentMethods.contains(_selectedSource))) {
-        _selectedSource = null;
-      }
-
-      if (_selectedDestination != null &&
-          !(_selectedType == "Deposit" && _selectedDestination == "Deposit" ||
-              _selectedType == "Shares" && _selectedDestination == "Shares" ||
-              _paymentMethods.contains(_selectedDestination))) {
-        _selectedDestination = null;
-      }
-    }
-
-    _updateDropdownValues();
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Transfer Funds',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Transfer Funds',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: Theme.of(context).primaryColor,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(context, "Type of Transfer"),
-            const SizedBox(height: 10),
-            _buildDropdownField(
-              context,
-              "Select Transfer Type",
-              _selectedType,
-              _transferTypes,
-              Icons.swap_horiz,
-              (value) {
-                setState(() {
-                  _selectedType = value;
-                  if (value == "Deposit") {
-                    _selectedDestination = "Deposit";
-                    _selectedSource = null;
-                  } else if (value == "Shares") {
-                    _selectedDestination = "Shares";
-                    _selectedSource = null;
-                  } else if (value == "Withdraw") {
-                    _selectedSource = "Deposit";
-                    _selectedDestination = null;
-                  }
-                });
-              },
-            ),
-            const SizedBox(height: 20),
-            _buildHeader(context, "Source"),
-            const SizedBox(height: 10),
-            _buildDropdownField(
-              context,
-              "Select Source",
-              _selectedSource,
-              _selectedType == "Withdraw" ? ["Deposit"] : _paymentMethods,
-              Icons.account_balance_wallet,
-              (value) {
-                setState(() {
-                  _selectedSource = value;
-                });
-              },
-            ),
-            const SizedBox(height: 20),
-            _buildHeader(context, "Destination"),
-            const SizedBox(height: 10),
-            _buildDropdownField(
-              context,
-              "Select Destination",
-              _selectedDestination,
-              _selectedType == "Deposit"
-                  ? ["Deposit"]
-                  : _selectedType == "Shares"
-                      ? ["Shares"]
-                      : _paymentMethods,
-              Icons.account_balance_wallet,
-              (value) {
-                setState(() {
-                  _selectedDestination = value;
-                });
-              },
-            ),
-            const SizedBox(height: 20),
-            _buildHeader(context, "Amount"),
-            const SizedBox(height: 10),
-            _buildTextField(
-              context,
-              "Amount (MWK)",
-              _amountController,
-              Icons.attach_money,
-              TextInputType.number,
-            ),
-            const SizedBox(height: 30),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  logger.i("Submit transfer button clicked.");
-                  _performTransfer();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 40,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).primaryColor,
+              Theme.of(context).scaffoldBackgroundColor,
+            ],
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              // Transfer Form Card
+              Container(
+                margin: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
                 ),
-                child: const Text(
-                  "Submit Transfer",
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildSectionTitle("Transfer Type"),
+                      const SizedBox(height: 10),
+                      _buildTransferTypeSelector(),
+                      const SizedBox(height: 20),
+                      _buildSectionTitle("Source"),
+                      const SizedBox(height: 10),
+                      _buildSourceSelector(),
+                      const SizedBox(height: 20),
+                      _buildSectionTitle("Destination"),
+                      const SizedBox(height: 10),
+                      _buildDestinationSelector(),
+                      const SizedBox(height: 20),
+                      _buildSectionTitle("Amount"),
+                      const SizedBox(height: 10),
+                      _buildAmountField(),
+                      const SizedBox(height: 30),
+                      _buildSubmitButton(),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context, String text) {
+  Widget _buildSectionTitle(String title) {
     return Text(
-      text,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      title,
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _buildTransferTypeSelector() {
+    return _buildDropdownField(
+      "Select Transfer Type",
+      _selectedType,
+      _transferTypes,
+      Icons.swap_horiz,
+      (value) {
+        setState(() {
+          _selectedType = value;
+          if (value == "Deposit") {
+            _selectedDestination = "Deposit";
+            _selectedSource = null;
+          } else if (value == "Shares") {
+            _selectedDestination = "Shares";
+            _selectedSource = null;
+          } else if (value == "Withdraw") {
+            _selectedSource = "Deposit";
+            _selectedDestination = null;
+          }
+        });
+      },
+    );
+  }
+
+  Widget _buildSourceSelector() {
+    return _buildDropdownField(
+      "Select Source",
+      _selectedSource,
+      _selectedType == "Withdraw" ? ["Deposit"] : _paymentMethods,
+      Icons.account_balance_wallet,
+      (value) => setState(() => _selectedSource = value),
+    );
+  }
+
+  Widget _buildDestinationSelector() {
+    return _buildDropdownField(
+      "Select Destination",
+      _selectedDestination,
+      _selectedType == "Deposit"
+          ? ["Deposit"]
+          : _selectedType == "Shares"
+              ? ["Shares"]
+              : _paymentMethods,
+      Icons.account_balance_wallet,
+      (value) => setState(() => _selectedDestination = value),
+    );
+  }
+
+  Widget _buildAmountField() {
+    return TextFormField(
+      controller: _amountController,
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        labelText: "Amount (MWK)",
+        prefixIcon:
+            Icon(Icons.attach_money, color: Theme.of(context).primaryColor),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(
+            color: Theme.of(context).primaryColor.withOpacity(0.3),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(
+            color: Theme.of(context).primaryColor,
+          ),
+        ),
+      ),
     );
   }
 
   Widget _buildDropdownField(
-    BuildContext context,
     String label,
-    String? selectedValue,
+    String? value,
     List<String> items,
     IconData icon,
-    ValueChanged<String?> onChanged,
+    Function(String?) onChanged,
   ) {
-    return Card(
-      elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: DropdownButtonFormField<String>(
-          decoration: InputDecoration(
-            labelText: label,
-            icon: Icon(icon, color: Theme.of(context).primaryColor),
-            border: InputBorder.none,
+    return DropdownButtonFormField<String>(
+      value: value,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Theme.of(context).primaryColor),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(
+            color: Theme.of(context).primaryColor.withOpacity(0.3),
           ),
-          value: selectedValue,
-          items: items.map((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
-          onChanged: onChanged,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(
+            color: Theme.of(context).primaryColor,
+          ),
         ),
       ),
+      items: items.map((String item) {
+        return DropdownMenuItem(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+      onChanged: onChanged,
     );
   }
 
-  Widget _buildTextField(
-    BuildContext context,
-    String label,
-    TextEditingController controller,
-    IconData icon,
-    TextInputType keyboardType,
-  ) {
-    return Card(
-      elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: TextField(
-          controller: controller,
-          keyboardType: keyboardType,
-          decoration: InputDecoration(
-            labelText: label,
-            icon: Icon(icon, color: Theme.of(context).primaryColor),
-            border: InputBorder.none,
+  Widget _buildSubmitButton() {
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton(
+        onPressed: _performTransfer,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Theme.of(context).primaryColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+        ),
+        child: const Text(
+          "Submit Transfer",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
       ),
